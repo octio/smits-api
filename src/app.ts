@@ -22,7 +22,7 @@ class App {
   }
 
   private routes(): void {
-    this.express.use('/pagamento/v1', getRoutes())
+    this.express.use('/smits/v1', getRoutes())
   }
 
   private errorHandler(): void {

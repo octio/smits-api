@@ -13,3 +13,6 @@ coverage
 
 # Log
 logs
+
+# Database
+*.db*
