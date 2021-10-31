@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express'
 import { Secret, SignOptions, sign } from 'jsonwebtoken'
-import nodemailer from 'nodemailer'
 import * as yup from 'yup'
 
 import { PrismaClient } from '.prisma/client'
 import { validate } from '@core/validation'
+import { SendEmail } from './email-service'
 
 const tokenOptions = { expiresIn: process.env.APP_TOKEN_EXPIRES_DAY }
 
@@ -14,7 +14,7 @@ const Authenticate = yup.object().shape({
 })
 
 export const makeAuthenticate =
-  (db: PrismaClient) =>
+  (db: PrismaClient, sendEmail: SendEmail) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = await validate(req.body, Authenticate)
@@ -54,35 +54,4 @@ function generateToken(
   const data = { email }
   const token = sign({ data }, secret, options)
   return token
-}
-
-type SendMailInput = {
-  from: string
-  to: string
-  subject: string
-  text: string
-  html?: string
-}
-
-async function sendEmail({ from, to, subject, text, html }: SendMailInput) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST!,
-    port: process.env.EMAIL_PORT,
-    secure: process.env.SECURE,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  })
-
-  const info = await transporter.sendMail({
-    from,
-    to,
-    subject,
-    text,
-    html
-  })
-
-  console.log('Message sent: %s', info.messageId)
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
 }
