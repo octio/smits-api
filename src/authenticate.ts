@@ -36,8 +36,7 @@ export const makeAuthenticate =
         from: process.env.EMAIL_FROM!,
         to: user.email,
         subject: 'Hello ✔',
-        text: 'Hello world?',
-        html: '<b>Hello world?</b>'
+        text: `Your token is: ${token}`
       }
       await sendEmail(emailInput)
 
